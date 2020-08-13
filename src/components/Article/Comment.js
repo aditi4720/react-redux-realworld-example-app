@@ -1,9 +1,13 @@
 import DeleteButton from './DeleteButton';
 import { Link } from 'react-router-dom';
 import React from 'react';
+var Sentiment = require('sentiment');
+var sentiment = new Sentiment();
 
 const Comment = props => {
   const comment = props.comment;
+  var result = sentiment.analyze('Cats are stupid.');
+  console.dir(result);
   const show = props.currentUser &&
     props.currentUser.username === comment.author.username;
   return (
@@ -26,6 +30,23 @@ const Comment = props => {
         <span className="date-posted">
           {new Date(comment.createdAt).toDateString()}
         </span>
+        <span>
+      {(() => {
+        if (sentiment.analyze(comment.body).score>0) {
+          return (
+            <span className="date-posted">Positive</span>
+          )
+        } else if (sentiment.analyze(comment.body).score<0) {
+          return (
+            <span className="date-posted">Negative</span>
+          )
+        } else {
+          return (
+            <div>Neutral</div>
+          )
+        }
+      })()}
+    </span>
         <DeleteButton show={show} slug={props.slug} commentId={comment.id} />
       </div>
     </div>
